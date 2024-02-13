@@ -50,7 +50,7 @@ const LoginPage = () => {
               <TextField label="Email address" variant="outlined" fullWidth margin="normal" className={classes.blackText} />
               <TextField label="Password" variant="outlined" fullWidth margin="normal" type="password" className={classes.blackText} />
               <Button variant="contained" className={classes.button}>Sign in</Button>
-              <Link href="#" variant="body2" className={classes.blackText}>Forgot password?</Link>
+              <Link href="#" variant="body2" className={classes.blackText}>Forgot Password?</Link>
               <Typography variant="body2" paragraph style={{ marginTop: '16px' }} className={classes.blackText}>Don't have an account?</Typography>
               <Button variant="outlined" className={classes.blackText}>Create Account</Button>
             </div>

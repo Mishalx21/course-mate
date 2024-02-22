@@ -8,9 +8,9 @@ export const POST = async (request ) => {
 
   
     const connection = await oracledb.getConnection({
-      user: "c##coursemate",
-      password: "12345",
-      connectString: "localhost:1521/ORCL"
+        user          : "c##coursemate", 
+        password      : "password",  
+        connectString : "localhost:1521/ORCL"
     });
 
     
@@ -20,20 +20,42 @@ export const POST = async (request ) => {
     //console.log(password);
     //console.log(gender);
      //const g = 'F';
+     
    
     const resultInsert = await connection.execute(
-      insertStudentQuery(name, email, password, g , dob, education )
+     `DECLARE 
+     userId NUMBER;
+     BEGIN
+      :userId := CREATE_USER(:name,:email,:password,:dob,:g,:edu);
+      END;`,{
+      name: name,
+      email: email,
+      password: password,
+      dob:dob,
+      g:gender,
+      edu:education,
+      userId: {type: oracledb.NUMBER, dir: oracledb.BIND_OUT}
+      },{outFormat: oracledb.OUT_FORMAT_OBJECT}
     );
     console.log("insert success");
 
    
     await connection.commit();
+    const userId = resultInsert.outBinds.userId;
+    console.log(userId);
+    
 
    
     await connection.close();
 
+    if (userId === -1) {
+      return Response.json({ message: 'User already exists' ,userId:userId});
+    }
+    else{
+      return Response.json({ message: 'User created successfully',userId:userId});
+
+    }
     
-    return Response.json({ message: 'Sign-up successful' });
   } catch (error) {
     
     console.error('An error occurred:', error);

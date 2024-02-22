@@ -1,5 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import secureLocalStorage from 'react-secure-storage';
 
 export default function SignUp() {
 
@@ -7,15 +9,28 @@ export default function SignUp() {
     name: '',
     email: '',
     password: '',
-    gender: 'M', 
+    gender: '', 
     dob: '',
     education: '',
   });
+  const router = useRouter();
+  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const[error,setError]=useState(" ");
+  const [isErrorOccured, setIsErrorOccured] = useState(false);
+  const [name1,setName]=useState("");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [gender,setGender]=useState("");
+  const [dob,setDob]=useState("");
+  const [education,setEducation]=useState("");
 
+  const handleSubmit = async (event) => {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+    const {name,value}=event.target;
+    
+    console.log("Checking user");
+    event.preventDefault();
+console.log(1);
     
     const apiUrl = 'http://localhost:3000/api/sign_up';
 
@@ -28,13 +43,27 @@ export default function SignUp() {
         },
         body: JSON.stringify(formData), 
       });
+      const data = await response.json();
+      console.log(data);
+      let u_id = data.userId;
+      let message = data.message;
+      console.log(u_id);
 
-      if (response.ok) {
+      if (message === "User created successfully") {
       
         console.log('Form submitted successfully!');
+        secureLocalStorage.setItem("u_email", email);
+        secureLocalStorage.setItem("u_name", name1);
+        secureLocalStorage.setItem("u_id", u_id);
        
-        window.location.href = '/login';
-      } else {
+        window.location.href = 'http://localhost:3000';
+      }
+      else if(message==="User already exists"){
+        setError("User already exists");
+        setIsErrorOccured(true);
+
+      }
+       else {
         
         console.error('Form submission failed.');
       }
@@ -45,8 +74,10 @@ export default function SignUp() {
 
  
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    
+    const { name, value } = e.target;  
+    if(name==="name"){
+      setName(value);
+    }
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -133,7 +164,6 @@ export default function SignUp() {
                 >
                   <option value="M">Male</option>
                   <option value="F">Female</option>
-                  <option value="O">Other</option>
                 </select>
               </div>
             </div>
@@ -175,6 +205,7 @@ export default function SignUp() {
             <div>
               <button
                 type="submit"
+                onClick={handleSubmit}
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Sign up

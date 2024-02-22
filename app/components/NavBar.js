@@ -17,7 +17,6 @@ const NavBar = () => {
   const userDropdownRef = useRef();
   const [isLoggedIn,setisLoggedIn]=useState(false);
 
-
   useEffect(() => {
     if (secureLocalStorage.getItem("u_id")) {
       setisLoggedIn(true);
@@ -67,7 +66,7 @@ const NavBar = () => {
             Log In
           </Button>
           </Link>
-          
+          <Link href="/signup" >
           <Button
             variant="contained"
             sx={{
@@ -78,10 +77,11 @@ const NavBar = () => {
           >
             Sign Up
           </Button>
+          </Link>
         </div>}
         {isLoggedIn&&
         <div>
-         
+         <Link href={"/users/shopping_cart"} >
         <Button
         variant="contained"
         sx={{
@@ -93,6 +93,7 @@ const NavBar = () => {
           <ShoppingCartIcon color="primary" />
 
         </Button>
+        </Link>
 
         <Link href={`/user/${user_id}/userUpdate`} style={{ textDecoration: "none" }}> 
         <Chip

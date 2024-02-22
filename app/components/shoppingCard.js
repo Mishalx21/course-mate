@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+//{courseName,price,review}
 export default function ShoppingCard() {
   return (
     <div className="w-full mt-2">

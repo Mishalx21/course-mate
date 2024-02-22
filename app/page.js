@@ -4,10 +4,11 @@ import CourseCardGrid from "./components/coursecardgrid";
 import Course_Card_New from "./components/course_card_test";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
-
+import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 import NavBar from "./components/NavBar";
+import secureLocalStorage from "react-secure-storage";
 
 async function getCourse() {
   const response = await fetch("http://localhost:3000/api");
@@ -21,30 +22,18 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
+  const [isLoggedIn,setisLoggedIn]=useState(false);
 
-  // useEffect(() => {
-  //   fetch('http://localhost:3000/api').then((a)=>{
-  //     return a.json();
-  // }).then((data) => {
-  //       console.log(data);
-  //       setTopRatedCourses(data);
-  //       console.log('here it is2');
-  //       console.log(data);
-  //       //setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching data:', error);
-  //       setError('Error fetching data. Please try again later.');
-  //       //setLoading(false);
-  //     });
-  // }, []);
+  useEffect(() => {
+    if (secureLocalStorage.getItem("u_id")) {
+      setisLoggedIn(true);
+    }
+  }, [isLoggedIn]);
 
-  // const handleSearch = (searchText) => {
-  //   const filterd=topRatedCourses.filter((course) =>
-  //     course[1].toLowerCase().includes(searchText.toLowerCase())
-  //   );
-  //   setFilteredCourses(filtered);
-  // };
+  const user=secureLocalStorage.getItem("u_name");
+  const user_id=secureLocalStorage.getItem("u_id");
+
+
   useEffect(() => {
     fetch("http://localhost:3000/api/popular_course")
       .then((a) => {
@@ -59,17 +48,18 @@ export default function Home() {
       });
   }, []);
 
-  
-
   return (
     <main>
-      <NavBar/>
-      <div>
-        
-      </div>
+      <NavBar />
+      <div></div>
       <div className="children-wrapper">
-        
         <Container>
+          {isLoggedIn&&
+          <Typography variant="h4" gutterBottom>
+           Let's start learning,{user}
+        </Typography>
+          }
+          
           <Typography variant="h4" gutterBottom>
             Top Rated Courses
           </Typography>

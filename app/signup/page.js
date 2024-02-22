@@ -33,7 +33,7 @@ export default function SignUp() {
       
         console.log('Form submitted successfully!');
        
-        window.location.href = '/signin';
+        window.location.href = '/login';
       } else {
         
         console.error('Form submission failed.');

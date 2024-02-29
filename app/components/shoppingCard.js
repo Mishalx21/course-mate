@@ -1,6 +1,38 @@
 import Image from "next/image";
+import { useEffect } from "react";
 //{courseName,price,review}
-export default function ShoppingCard() {
+
+export default function ShoppingCard({
+  courseName,
+  price,
+  rating,
+  cart_id,
+  course_id,
+  removeFromCart,
+}) {
+  const handleremove = () => {
+    console.log("course_id", course_id);
+    console.log("cart_id", cart_id);
+
+    removeFromCart(course_id, cart_id);
+    // try {
+    //   const response = await fetch(
+    //     "http://localhost:3000/api/remove_course_from_cart",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ cart_id: cart_id, course_id: course_id }),
+    //     }
+    //   );
+    //   const json = await response.json();
+    //   //console.log("json", json);
+    // } catch (error) {
+    //   console.error("Error fetching cart courses:", error);
+    // }
+  };
+
   return (
     <div className="w-full mt-2">
       <div className="bg-white shadow-md rounded-md p-4">
@@ -12,7 +44,7 @@ export default function ShoppingCard() {
           {/* Course Details */}
           <div className="col-span-1 flex items-center">
             <div className="px-1">
-              <h2 className="text-lg font-bold">Data Science</h2>
+              <h2 className="text-lg font-bold">{courseName}</h2>
               <div className="flex items-center mt-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +58,7 @@ export default function ShoppingCard() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm mr-1">$12.99</p>
+                <p className="text-sm mr-1">{price}</p>
                 <div className="flex items-center mr-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +72,7 @@ export default function ShoppingCard() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <p className="text-sm mr-1">13 reviews</p>
+                  <p className="text-sm mr-1">{rating} rating</p>
                 </div>
               </div>
             </div>
@@ -48,7 +80,10 @@ export default function ShoppingCard() {
           {/* Remove Button */}
           <div className="col-span-1 flex items-center justify-end">
             <div className="pr-1 py-2">
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              <button
+                onClick={handleremove}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
                 Remove
               </button>
             </div>

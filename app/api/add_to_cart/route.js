@@ -1,4 +1,5 @@
 import OracleDB from 'oracledb';
+
 export async function POST(request){
     const connection = await OracleDB.getConnection({
         user          : "c##coursemate", 
@@ -7,46 +8,40 @@ export async function POST(request){
     });
    
     const body =await request.json();
-    
+    const student_id = body.student_id;
+    const course_id = body.course_id;
 
     const result = await connection.execute(`DECLARE
-    user_id NUMBER;
-    user_name VARCHAR2(255);
+    cart_id NUMBER;
 BEGIN
-    CHECK_USER(:email, :password, :user_id, :user_name);
-    
+    :cart_id := ADD_CART(:student_id,:course_id);   
 END;
 `,
     {
-        email: user_email,
-        password: user_password,
-        user_id: {type: OracleDB.NUMBER, dir: OracleDB.BIND_OUT},
-        user_name: {type: OracleDB.STRING, dir: OracleDB.BIND_OUT}
+        student_id: student_id,
+        course_id: course_id,
+        cart_id: {type: OracleDB.NUMBER, dir: OracleDB.BIND_OUT}
     },{outFormat: OracleDB.OUT_FORMAT_OBJECT});
+    await connection.commit();
+    const cart_id=result.outBinds.cart_id;
     await connection.close();
+
     let message='';
-    let success = false;
-    const u_id=result.outBinds.user_id;
-    const u_name=result.outBinds.user_name;
-    if(u_id==-2)
+    
+    console.log(cart_id);
+    if(cart_id==-1)
     {
-        message='Invalid Password';
-        success=false;
-        console.log(u_id);
-    }
-    else if(u_id==-1)
-    {
-        message='User is not registered';
-        success=false;
-        console.log(u_id);
+        message='Course already added to cart';
+        console.log(cart_id);
+        console.log(message);
     }
     else
     {
-        message='Valid user';
-        console.log(u_id);
-        console.log(u_name);
-        success=true;
+        message='Valid course added to cart';
+        console.log(cart_id);
+        console.log(message);
+
     }
  
-    return Response.json({success:success, message:message, user_id:u_id, user_name:u_name});
+    return Response.json({ message:message, cart_id:cart_id});
 }

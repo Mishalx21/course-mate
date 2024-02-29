@@ -5,6 +5,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import secureLocalStorage from "react-secure-storage";
+import Link from "next/link";
 
 export default function Course({ params }) {
   const [course, setCourse] = useState([]);
@@ -59,6 +61,31 @@ export default function Course({ params }) {
     }
     init();
   }, []);
+  const id = secureLocalStorage.getItem("u_id");
+  const add_cart=async()=>{
+    console.log("Adding to cart");
+    console.log("student id",id); 
+    
+    const response = await fetch(
+      "http://localhost:3000/api/add_to_cart",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ course_id: params.course_id ,student_id:secureLocalStorage.getItem("u_id")}),
+      }
+    );
+    const json = await response.json();
+    console.log(json);
+    if(json.cart_id==-1){
+      alert("Course already in cart");
+    }
+    else{
+      alert("Course added to cart");
+    }
+
+  }
 
   const renderRatingStars = (rating) => {
     const stars = [];
@@ -94,6 +121,10 @@ export default function Course({ params }) {
       <h2 className="text-xl mb-2">
         Overall Rating: {renderRatingStars(course[3])}
       </h2>
+      <Link href="../users/content">
+      <button type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-7 me-2 mb-2">View Content
+      </button>
+      </Link>
       <div className="review w-10/12 ">
         <h2 className="text-2xl font-semibold mb-4 ">Reviews</h2>
         {reviews.map((review) => (
@@ -116,7 +147,7 @@ export default function Course({ params }) {
           <h3 className="text-xl">Price: $99.99</h3>
         </div>
         <div className="border-t border-gray-300 w-full p-4 flex justify-between">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={add_cart}>
             Add to Cart
           </button>
           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">

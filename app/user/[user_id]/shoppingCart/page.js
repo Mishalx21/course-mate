@@ -1,10 +1,32 @@
 "use client";
 import NavBar from "@/app/components/NavBar";
 import ShoppingCard from "@/app/components/shoppingCard";
+import { useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 
 export default function ShoppindCart() {
-  
+  const [cartCourses, setCartCourses] = useState([]);
+
+  const user = secureLocalStorage.getItem("u_id");
+  useEffect(() => {
+    async function init() {
+      console.log("user");
+      const response = await fetch("http://localhost:3000/api/get_cart_Info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ student_id: user }),
+      });
+
+      const json = await response.json();
+      setCartCourses(json);
+      console.log(json);
+    }
+
+    init();
+  }, []);
+
   return (
     <>
       <div>

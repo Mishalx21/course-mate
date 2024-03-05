@@ -12,6 +12,12 @@ export default function Course({ params }) {
   const [course, setCourse] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [instructor, setInstructor] = useState([]);
+  const [is_buy, setIsBuy] = useState(false);
+const dataToSend={
+  courseId:params.course_id
+};
+
+const id = secureLocalStorage.getItem("u_id");
 
   useEffect(() => {
     async function init() {
@@ -58,10 +64,32 @@ export default function Course({ params }) {
       setInstructor(json3);
 
       console.log(json);
+
+
+      const response4 = await fetch(
+        "http://localhost:3000/api/is_bought_course",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ studentId: id, courseId: params.course_id }),
+        }
+      );
+      const json4 = await response4.json();
+      console.log("is bought course",json4);
+      console.log("is bought course number",json4[0][0]);
+      if(json4[0][0]>0){
+        setIsBuy(true);
+      }
+      else{
+        setIsBuy(false);
+      }
     }
+
     init();
   }, []);
-  const id = secureLocalStorage.getItem("u_id");
+ 
   const add_cart=async()=>{
     console.log("Adding to cart");
     console.log("student id",id); 
@@ -121,10 +149,11 @@ export default function Course({ params }) {
       <h2 className="text-xl mb-2">
         Overall Rating: {renderRatingStars(course[3])}
       </h2>
+      {is_buy&&(
       <Link href="../users/content">
       <button type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-7 me-2 mb-2">View Content
       </button>
-      </Link>
+      </Link>)}
       <div className="review w-10/12 ">
         <h2 className="text-2xl font-semibold mb-4 ">Reviews</h2>
         {reviews.map((review) => (
@@ -138,13 +167,14 @@ export default function Course({ params }) {
         ))}
       </div>
     </div>
+    {!is_buy&&(
     <div className="w-2/10 p-8 mt-10 ">
       <div className="flex flex-col items-center border border-gray-300 rounded-lg">
         <div className="mb-4">
           <img src="/image.gif" alt="Course Image" className="img" />
         </div>
         <div className="mb-4">
-          <h3 className="text-xl">Price: $99.99</h3>
+          <h3 className="text-xl">Price: ${course[4]}</h3>
         </div>
         <div className="border-t border-gray-300 w-full p-4 flex justify-between">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={add_cart}>
@@ -156,6 +186,7 @@ export default function Course({ params }) {
         </div>
       </div>
     </div>
+    )}
   </div>
 </>
 

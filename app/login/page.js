@@ -41,7 +41,7 @@ export default function Login() {
         console.log("Logged in");
         console.log(u_id);
        console.log(u_name);
-        router.push(`/user/${u_id}`); 
+        router.push(`/`); 
       } else {
         setIsErrorOccured(true);
         setError(message);
@@ -56,7 +56,7 @@ export default function Login() {
     console.log("use effect");
     console.log(u);
     if (secureLocalStorage.getItem("u_id")) {
-      router.push(`/user/${u}`); 
+      router.push(`/`); 
       // router.push("/user");
      // <Link key={u} href={`/user/${u}`} />;
     }

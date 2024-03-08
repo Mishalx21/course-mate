@@ -41,8 +41,8 @@ export default function Course_Card_New({ course_id, course_name, course_rating,
        <Grid item xs={3} >
         <Link href={`/courses/${course_id}`}>
         <ThemeProvider theme={theme1}>
-        <Paper elevation={12}>
-            <img src="./image.gif" alt="course" className="img"/>
+        <Paper elevation={10}>
+            <Image src="/image.gif" alt="course" className="img" height={200} width={300} />
             <Box paddingX={1}>
             <Typography variant="subtitle1" component="h2" fontWeight="bold">
                 {course_name}

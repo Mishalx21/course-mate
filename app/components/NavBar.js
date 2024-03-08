@@ -95,7 +95,7 @@ const NavBar = () => {
         </Button>
         </Link>
 
-        <Link href={`/user/${user_id}/userUpdate`} style={{ textDecoration: "none" }}> 
+        <Link href={`/users/dashboard`} style={{ textDecoration: "none" }}> 
         <Chip
           icon={<AccountCircleOutlinedIcon />}
           label={user}

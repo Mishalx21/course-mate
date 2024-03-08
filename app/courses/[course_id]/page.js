@@ -150,7 +150,7 @@ const id = secureLocalStorage.getItem("u_id");
         Overall Rating: {renderRatingStars(course[3])}
       </h2>
       {is_buy&&(
-      <Link href="../users/content">
+      <Link href={ {pathname:'../users/content', query:{course_id:params.course_id },}}>
       <button type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-7 me-2 mb-2">View Content
       </button>
       </Link>)}

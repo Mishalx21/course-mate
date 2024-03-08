@@ -1,24 +1,33 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
+
 import NavBar from "@/app/components/NavBar";
-import { data } from "autoprefixer";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+//import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import secureLocalStorage from "react-secure-storage";
-import Link from "next/link";
+import CommentBox from "@/app/components/comment";
+
+import { useSearchParams } from "next/navigation";
 export default function Course() {
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  const [selectedMenuItem, setSelectedMenuItem] = useState("");
   const [videoPlayed, setVideoPlayed] = useState(false);
   const [moduleId, setModuleId] = useState([]);
   const [moduleContent, setModuleContent] = useState([]);
   const [clickedModule, setclickedModule] = useState("1");
   const [contentClicked, setContentClicked] = useState(false);
-  const router = useRouter();
+
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [videoUrl, setVideoUrl] = useState("");
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const student_id = secureLocalStorage.getItem("u_id");
+  
+  const searchParams = useSearchParams();
+  const courseId = searchParams.get("course_id");
+  console.log(" use search Course ID:", courseId);
+
 
   useEffect(() => {
     const fetchCourseModules = async () => {
@@ -28,7 +37,7 @@ export default function Course() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ course_id: "7" }),
+          body: JSON.stringify({ course_id: courseId }),
         });
         const json = await response.json();
         console.log("Course Modules:", json);
@@ -43,9 +52,6 @@ export default function Course() {
     };
     fetchCourseModules(); // Fetch data initially
   }, []);
-  const handleCommentChange = (e) => {
-    setComment(e.target.value);
-  };
 
   const handleRatingChange = (e) => {
     setRating(parseInt(e.target.value));
@@ -78,20 +84,29 @@ export default function Course() {
   const toggleSubMenu = () => {
     setSubmenuOpen(!submenuOpen);
     setContentClicked(false);
-    setSelectedMenuItem(""); // Reset selectedMenuItem when closing the overview
+    setVideoPlayed(false);
+    //setShowCommentBox(false);
+    //setSelectedMenuItem(""); // Reset selectedMenuItem when closing the overview
   };
 
   const handleMenuItemClick = (menuItem) => {
-    setSelectedMenuItem(menuItem);
-    setContentClicked(false);
+    //setSelectedMenuItem(menuItem);
+    //setContentClicked(true);
+
+    // setShowCommentBox(false);
     if (menuItem === "Title 1") {
       // Open video in new page
       router.push("video");
     }
   };
+  const handleCommentBox = () => {
+    setShowCommentBox(!showCommentBox);
+    setContentClicked(false);
+    setSelectedMenuItem(false);
+  };
 
   const handleVideoPlayed = ({ menuItem, videourl }) => {
-    setSelectedMenuItem(menuItem);
+    //setSelectedMenuItem(menuItem);
 
     // Open video in new page
     //let url = "/Python.mp4";
@@ -106,12 +121,17 @@ export default function Course() {
     setVideoUrl(url);
     // router.push("video");
   };
+  const handleModuleClick = (module) => {
+    setContentClicked(true);
+  };
 
   ///////////
   const handleContentClick = () => {
     //setSelectedContent(content);
     //setVideoPlayed(true); // Show video box
+    setVideoPlayed(true);
     setContentClicked(true);
+    setShowCommentBox(false);
   };
 
   return (
@@ -155,7 +175,7 @@ export default function Course() {
                     data-collapse-toggle="dropdown-example"
                   >
                     <svg
-                      class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                      className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -167,7 +187,7 @@ export default function Course() {
                       Overview
                     </span>
                     <svg
-                      class="w-3 h-3"
+                      className="w-3 h-3"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -177,7 +197,7 @@ export default function Course() {
                         stroke="currentColor"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeWidth="2"
                         d="m1 1 4 4 4-4"
                       />
                     </svg>
@@ -192,6 +212,7 @@ export default function Course() {
                           onClick={() => {
                             handleMenuItemClick(module[1]);
                             setclickedModule(module[0]);
+                            handleModuleClick();
                           }}
                         >
                           Module {index + 1}: {module[1]}
@@ -210,10 +231,11 @@ export default function Course() {
                       icon={faComment}
                       style={{ color: "#9aa3b1" }}
                     />
-
-                    <span className="flex-1 ms-3 whitespace-nowrap">
-                      Review this course
-                    </span>
+                    <button onClick={handleCommentBox}>
+                      <span className="flex-1 ms-3 whitespace-nowrap">
+                        Review this course
+                      </span>
+                    </button>
                   </a>
                 </li>
               </ul>
@@ -222,7 +244,10 @@ export default function Course() {
 
           <div className="p-4 sm:ml-64 py-5">
             {/* Right side box with three columns */}
-            {selectedMenuItem && !videoPlayed && (
+            {showCommentBox && <CommentBox
+            student_id={student_id}
+            course_id={courseId} />}
+            {contentClicked && (
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
@@ -260,7 +285,7 @@ export default function Course() {
                 </div>
               </div>
             )}
-            {contentClicked && (
+            {videoPlayed && (
               <div>
                 <div className="flex justify-center items-center">
                   <div className="rounded-lg shadow-lg overflow-hidden mt-5">
